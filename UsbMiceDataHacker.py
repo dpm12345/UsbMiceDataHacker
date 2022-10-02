@@ -6,6 +6,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 mousePositionX = 0
 mousePositionY = 0
 
@@ -13,15 +14,15 @@ X = []
 Y = []
 
 DataFileName = "usb.dat"
-data = []
+datas = []
 
 def main():
     global mousePositionX
     global mousePositionY
     # check argv
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Usage : ")
-        print("        python UsbMiceHacker.py data.pcap [LEFT|RIGHT|MOVE|ALL]")
+        print("        python UsbMiceHacker.py data.pcap [LEFT|RIGHT|MOVE|ALL] [T/F]")
         print("Tips : ")
         print("        To use this python script , you must install the numpy,matplotlib first.")
         print("        You can use `sudo pip install matplotlib numpy` to install it")
@@ -29,12 +30,14 @@ def main():
         print("        WangYihang <wangyihanger@gmail.com>")
         print("        If you have any questions , please contact me by email.")
         print("        Thank you for using.")
+        print("Modification :")
+        print("        dpm12345 <106975692@qq.com>")
         exit(1)
 
     # get argv
     pcapFilePath = sys.argv[1]
     action = sys.argv[2]
-
+    flag = True if sys.argv[3] == "T" else False
     if action != "LEFT" and action != "ALL" and action != "RIGHT" and action != "MOVE":
         action = "LEFT"
 
@@ -47,11 +50,11 @@ def main():
     # read data
     with open(DataFileName, "r") as f:
         for line in f:
-            data.append(line[0:-1])
+            datas.append(line[0:-1])
 
     # handle move
-    for i in data:
-        Bytes = i.split(":")
+    for data in datas:
+        Bytes = data.split(":") if flag else [data[i:i+2] for i in range(0,len(data)) if not i&1]
         if len(Bytes) == 8:
             horizontal = 2  # -
             vertical = 4  # |
@@ -102,7 +105,7 @@ def main():
     plt.show()
 
     # clean temp data
-    os.system("rm ./%s" % (DataFileName))
+    os.remove(DataFileName)
 
 if __name__ == "__main__":
     main()
